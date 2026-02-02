@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Valentine 💖</title>
+
+<style>
+:root{
+ --bg1:#ff4d6d;
+ --bg2:#ff9aa2;
+ --card:#fff;
+ --text:#333;
+}
+
+.dark{
+ --bg1:#0f2027;
+ --bg2:#203a43;
+ --card:#111;
+ --text:#fff;
+}
+
+*{box-sizing:border-box;font-family:system-ui;}
+
+body{
+ margin:0;
+ min-height:100vh;
+ background:linear-gradient(135deg,var(--bg1),var(--bg2));
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ overflow:hidden;
+}
+
+.container{
+ background:var(--card);
+ color:var(--text);
+ width:92%;
+ max-width:380px;
+ border-radius:28px;
+ padding:28px;
+ text-align:center;
+ box-shadow:0 25px 60px rgba(0,0,0,.4);
+ position:relative;
+ z-index:5;
+ animation:pop .6s;
+}
+
+@keyframes pop{
+ from{transform:scale(.6);opacity:0;}
+ to{transform:scale(1);opacity:1;}
+}
+
+h1{color:#ff2d5f;font-size:26px;}
+.love-glow{text-shadow:0 0 10px #ff5c8a;}
+
+.btns{display:flex;justify-content:space-around;margin-top:22px;}
+
+button{
+ padding:14px 30px;
+ border-radius:50px;
+ border:none;
+ font-size:16px;
+ cursor:pointer;
+}
+
+.yes{background:#ff3366;color:white;}
+.no{background:#ddd;}
+
+.toggle{
+ position:fixed;
+ top:15px;
+ right:15px;
+ padding:8px 14px;
+ border-radius:20px;
+ border:none;
+ z-index:30;
+}
+
+/* Floating hearts */
+.floating-heart{
+ position:absolute;
+ bottom:-30px;
+ font-size:22px;
+ animation:floatUp linear infinite;
+ opacity:.6;
+}
+
+@keyframes floatUp{
+ to{transform:translateY(-120vh);opacity:0;}
+}
+
+/* Ring box */
+.ring-box{
+ width:140px;
+ height:100px;
+ background:#c2185b;
+ border-radius:12px;
+ margin:25px auto;
+ position:relative;
+ cursor:pointer;
+ box-shadow:0 10px 25px rgba(0,0,0,.4);
+}
+
+.lid{
+ position:absolute;
+ width:100%;
+ height:50%;
+ background:#e91e63;
+ top:0;
+ border-radius:12px 12px 0 0;
+ transform-origin:top;
+ transition:transform .8s;
+}
+
+.ring-box.open .lid{transform:rotateX(130deg);}
+
+.ring{
+ position:absolute;
+ top:32px;
+ left:50%;
+ transform:translateX(-50%) scale(0);
+ font-size:44px;
+ transition:.8s;
+}
+
+.ring-box.open .ring{
+ transform:translateX(-50%) scale(1.3);
+}
+
+/* Confetti */
+.confetti{
+ position:fixed;
+ top:-10px;
+ width:10px;
+ height:10px;
+ animation:fall linear forwards;
+ z-index:40;
+}
+
+@keyframes fall{
+ to{transform:translateY(110vh) rotate(720deg);opacity:0;}
+}
+
+/* Fireworks */
+.firework{
+ position:fixed;
+ width:6px;
+ height:6px;
+ border-radius:50%;
+ animation:explode 1s ease-out forwards;
+ z-index:2;
+}
+
+@keyframes explode{
+ to{transform:scale(18);opacity:0;}
+}
+</style>
+</head>
+
+<body>
+
+<button class="toggle" onclick="toggleMode()">🌙</button>
+
+<div id="app" class="container"></div>
+
+<audio id="music" loop>
+<source src="https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Chris_Haugen/Love/Chris_Haugen_-_01_-_Love.mp3">
+</audio>
+
+<script>
+const herName="Nabina";
+
+let noCount=0;
+let musicStarted=false;
+
+const app=document.getElementById("app");
+const music=document.getElementById("music");
+
+start();
+
+function start(){
+ showFirst();
+ spawnHearts();
+}
+
+function playMusic(){
+ if(!musicStarted){
+  music.play();
+  musicStarted=true;
+ }
+}
+
+function showFirst(){
+ app.innerHTML=`
+  <h1 class="love-glow">💞 Will you be my Valentine ${herName}? 💞</h1>
+  <div class="btns">
+   <button class="yes" onclick="playMusic();showRing()">Yes 😍</button>
+   <button class="no" onclick="playMusic();askAgain()">No 😢</button>
+  </div>
+ `;
+}
+
+/* ✅ Correct NO flow */
+function askAgain(){
+ noCount++;
+
+ if(noCount===1){
+  app.innerHTML=`
+   <h1>🥺 I'm asking second time… Do you love me?</h1>
+   <div class="btns">
+    <button class="yes" onclick="showRing()">Yes ❤️</button>
+    <button class="no" onclick="askAgain()">No 💔</button>
+   </div>
+  `;
+ }
+
+ else if(noCount===2){
+  app.innerHTML=`
+   <h1>😟 I'm asking third time… Do you love me?</h1>
+   <div class="btns">
+    <button class="yes" onclick="showRing()">Yes 💕</button>
+    <button class="no" onclick="askAgain()">No 😬</button>
+   </div>
+  `;
+ }
+
+ else{
+  finalStage();
+ }
+}
+
+function finalStage(){
+ app.innerHTML=`
+  <h1>😩 Still NO? I'm tired… Do you love me?</h1>
+  <div class="btns">
+   <button class="yes" onclick="showRing()">Yes 💖</button>
+   <button id="runaway" class="no">No 😏</button>
+  </div>
+ `;
+
+ const noBtn=document.getElementById("runaway");
+ ["touchstart","mouseover"].forEach(e=>{
+  noBtn.addEventListener(e,()=>{
+   const x=Math.random()*240-120;
+   const y=Math.random()*240-120;
+   noBtn.style.transform=`translate(${x}px,${y}px)`;
+  });
+ });
+}
+
+/* YES page */
+function showRing(){
+ celebrate();
+ app.innerHTML=`
+  <h1 class="love-glow">💖 I knew it! 💖</h1>
+
+  <div class="ring-box" id="ringBox">
+   <div class="lid"></div>
+   <div class="ring">💍</div>
+  </div>
+
+  <h1 class="love-glow">Love you forever my Valentine ❤️😘</h1>
+  <p>Tap the box…</p>
+ `;
+
+ document.getElementById("ringBox").onclick=()=>{
+  document.getElementById("ringBox").classList.add("open");
+ };
+}
+
+/* 🎉 Celebration */
+function celebrate(){
+ confettiBlast();
+ fireworkShow();
+}
+
+function confettiBlast(){
+ for(let i=0;i<90;i++){
+  const c=document.createElement("div");
+  c.className="confetti";
+  c.style.left=Math.random()*100+"vw";
+  c.style.background=`hsl(${Math.random()*360},90%,60%)`;
+  c.style.animationDuration=2+Math.random()*3+"s";
+  document.body.appendChild(c);
+  setTimeout(()=>c.remove(),5000);
+ }
+}
+
+function fireworkShow(){
+ for(let i=0;i<12;i++){
+  setTimeout(()=>{
+   const f=document.createElement("div");
+   f.className="firework";
+   f.style.left=Math.random()*100+"vw";
+   f.style.top=Math.random()*60+"vh";
+   f.style.background=`hsl(${Math.random()*360},90%,60%)`;
+   document.body.appendChild(f);
+   setTimeout(()=>f.remove(),1200);
+  },i*280);
+ }
+}
+
+/* Floating hearts */
+function spawnHearts(){
+ setInterval(()=>{
+  const h=document.createElement("div");
+  h.className="floating-heart";
+  h.innerHTML="💗";
+  h.style.left=Math.random()*100+"vw";
+  h.style.animationDuration=4+Math.random()*6+"s";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),9000);
+ },650);
+}
+
+function toggleMode(){
+ document.body.classList.toggle("dark");
+}
+</script>
+
+</body>
+</html>

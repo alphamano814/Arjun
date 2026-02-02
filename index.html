@@ -32,6 +32,7 @@ body{
  overflow:hidden;
 }
 
+/* Card */
 .container{
  background:var(--card);
  color:var(--text);
@@ -52,7 +53,7 @@ body{
 }
 
 h1{color:#ff2d5f;font-size:26px;}
-.love-glow{text-shadow:0 0 10px #ff5c8a;}
+.love-glow{text-shadow:0 0 12px #ff5c8a;}
 
 .btns{display:flex;justify-content:space-around;margin-top:22px;}
 
@@ -67,7 +68,20 @@ button{
 .yes{background:#ff3366;color:white;}
 .no{background:#ddd;}
 
-/* Ring */
+/* Floating hearts */
+.floating-heart{
+ position:absolute;
+ bottom:-30px;
+ font-size:22px;
+ animation:floatUp linear infinite;
+ opacity:.6;
+}
+
+@keyframes floatUp{
+ to{transform:translateY(-120vh);opacity:0;}
+}
+
+/* Ring box */
 .ring-box{
  width:140px;
  height:100px;
@@ -139,38 +153,45 @@ button{
 
 <div id="app" class="container"></div>
 
-<!-- Hidden YouTube player -->
-<iframe id="ytplayer"
-  width="0"
-  height="0"
-  style="display:none"
-  allow="autoplay"
-></iframe>
+<!-- 🎵 Custom Song -->
+<audio id="loveSong" preload="auto">
+  <source src="he.mp3" type="audio/mpeg">
+</audio>
 
 <script>
-const herName="Manisha";
+const herName="Nabina";
+
 let noCount=0;
 
 const app=document.getElementById("app");
-const yt=document.getElementById("ytplayer");
+const song=document.getElementById("loveSong");
 
 start();
+spawnHearts();
 
+/* ---------- AUDIO ---------- */
+function playSong(){
+ song.currentTime=0;
+ song.play().catch(e=>console.log("Audio blocked"));
+}
+
+/* ---------- START ---------- */
 function start(){
  showFirst();
 }
 
+/* ---------- FIRST PAGE ---------- */
 function showFirst(){
  app.innerHTML=`
   <h1 class="love-glow">💞 Will you be my Valentine ${herName}? 💞</h1>
   <div class="btns">
-   <button class="yes" onclick="showRing()">Yes 😍</button>
+   <button class="yes" onclick="playSong();showRing()">Yes 😍</button>
    <button class="no" onclick="askAgain()">No 😢</button>
   </div>
  `;
 }
 
-/* NO Flow */
+/* ---------- NO FLOW ---------- */
 function askAgain(){
  noCount++;
 
@@ -178,35 +199,37 @@ function askAgain(){
   app.innerHTML=`
    <h1>🥺 I'm asking second time… Do you love me?</h1>
    <div class="btns">
-    <button class="yes" onclick="showRing()">Yes ❤️</button>
+    <button class="yes" onclick="playSong();showRing()">Yes ❤️</button>
     <button class="no" onclick="askAgain()">No 💔</button>
    </div>
   `;
- } 
+ }
  else if(noCount===2){
   app.innerHTML=`
    <h1>😟 I'm asking third time… Do you love me?</h1>
    <div class="btns">
-    <button class="yes" onclick="showRing()">Yes 💕</button>
+    <button class="yes" onclick="playSong();showRing()">Yes 💕</button>
     <button class="no" onclick="askAgain()">No 😬</button>
    </div>
   `;
- } 
- else {
+ }
+ else{
   finalStage();
  }
 }
 
+/* ---------- FINAL NO ---------- */
 function finalStage(){
  app.innerHTML=`
   <h1>😩 Still NO? I'm tired… Do you love me?</h1>
   <div class="btns">
-   <button class="yes" onclick="showRing()">Yes 💖</button>
+   <button class="yes" onclick="playSong();showRing()">Yes 💖</button>
    <button id="runaway" class="no">No 😏</button>
   </div>
  `;
 
  const noBtn=document.getElementById("runaway");
+
  ["touchstart","mouseover"].forEach(e=>{
   noBtn.addEventListener(e,()=>{
    const x=Math.random()*240-120;
@@ -216,13 +239,9 @@ function finalStage(){
  });
 }
 
-/* YES PAGE + MUSIC */
+/* ---------- YES PAGE ---------- */
 function showRing(){
  celebrate();
-
- // 👉 Arijit Singh song (Tum Hi Ho)
- yt.src =
-  "https://www.youtube.com/embed/Umqb9KENgmk?autoplay=1&loop=1&playlist=Umqb9KENgmk";
 
  app.innerHTML=`
   <h1 class="love-glow">💖 I knew it! 💖</h1>
@@ -241,14 +260,14 @@ function showRing(){
  };
 }
 
-/* Celebration */
+/* ---------- EFFECTS ---------- */
 function celebrate(){
  confettiBlast();
  fireworkShow();
 }
 
 function confettiBlast(){
- for(let i=0;i<80;i++){
+ for(let i=0;i<90;i++){
   const c=document.createElement("div");
   c.className="confetti";
   c.style.left=Math.random()*100+"vw";
@@ -260,7 +279,7 @@ function confettiBlast(){
 }
 
 function fireworkShow(){
- for(let i=0;i<10;i++){
+ for(let i=0;i<12;i++){
   setTimeout(()=>{
    const f=document.createElement("div");
    f.className="firework";
@@ -269,8 +288,21 @@ function fireworkShow(){
    f.style.background=`hsl(${Math.random()*360},90%,60%)`;
    document.body.appendChild(f);
    setTimeout(()=>f.remove(),1200);
-  },i*300);
+  },i*280);
  }
+}
+
+/* ---------- FLOATING HEARTS ---------- */
+function spawnHearts(){
+ setInterval(()=>{
+  const h=document.createElement("div");
+  h.className="floating-heart";
+  h.innerHTML="💗";
+  h.style.left=Math.random()*100+"vw";
+  h.style.animationDuration=4+Math.random()*6+"s";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),9000);
+ },650);
 }
 </script>
 
